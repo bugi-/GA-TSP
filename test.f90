@@ -60,7 +60,7 @@ program test_suite
   end subroutine
   
   subroutine test_gen_route()
-    integer :: N, i
+    integer :: i
     integer, dimension(:), allocatable :: route
     
     print *, 'Printing some random routes:'
@@ -74,7 +74,6 @@ program test_suite
   
   subroutine test_gen_positions()
     integer, parameter :: N = 10
-    integer :: i
     real(rk) :: scale = 10.0
     type(pos) :: positions(N)
     
@@ -87,7 +86,6 @@ program test_suite
   subroutine test_create_child()
     integer, parameter :: N = 10
     type(pos) :: positions(N)
-    integer :: i
     integer, dimension(N) :: parent1, parent2, child
     
     parent1 = gen_route(N)

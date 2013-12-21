@@ -22,7 +22,7 @@ module ga_functions
     
     N = size(parent1)
     allocate(child(N))
-    child = [(0.0, i = 1, N)] ! Initialize child to 0 for error checking
+    child = [(0, i = 1, N)] ! Initialize child to 0 for error checking
 
     route_sum = N*(1+N)/2 ! Sum of the cities' numbers in a route. Helps finding last city required.
     
@@ -97,7 +97,7 @@ module ga_functions
           end do
         end if
       end if
-      print *, prev, next
+      !print *, prev, next ! Debug
       child(i) = next
     end do
     ! Choose the last city
