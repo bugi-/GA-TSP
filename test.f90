@@ -54,7 +54,7 @@ program test_suite
     route = (/5,3,4,1,2/)
     print *, 'Route 3:'
     res = route_length(route, positions)
-    call test(res, sqrt(2.0_rk) + 1 + sqrt(5.0_rk) + 1 + sqrt(5.0_rk)) ! The distances are in lexical order    
+    call test(res, sqrt(2.0_rk) + 1 + sqrt(5.0_rk) + 1 + sqrt(5.0_rk)) ! The distances are in lexical order 1-2, 2-3 etc.
     print *, 'Route distance checks passed!'
 
   end subroutine
@@ -87,23 +87,45 @@ program test_suite
   subroutine test_create_child()
     integer, parameter :: N = 10
     type(pos) :: positions(N)
+    integer :: i
     integer, dimension(N) :: parent1, parent2, child
     
     parent1 = gen_route(N)
     parent2 = gen_route(N)
     positions = gen_positions(N, 1.0_rk)
+    ! Print the routes and their intercity distances
     print *, 'Parents:'
-    write (*,'(*(i3.1))', advance='no') parent1
+    write (*,'(*(i5.1))', advance='no') parent1
     print *, 'Length:', route_length(parent1, positions)
-    write (*,'(*(i3.1))', advance='no') parent2
+    call print_distances(parent1, positions)
+    write (*,'(*(i5.1))', advance='no') parent2
     print *, 'Length:', route_length(parent2, positions)
+    call print_distances(parent2, positions)
     child = create_child(parent1, parent2, positions)
     print *, 'Child:'
-    write (*,'(*(i3.1))', advance='no') child
+    write (*,'(*(i5.1))', advance='no') child
     print *, 'Length:', route_length(child, positions)
+    call print_distances(parent2, positions)
+    
+    ! Simple check for correctness of the routes
     if (.not. is_valid_route(child)) print *, 'Problem with child!'
     if (.not. is_valid_route(parent1)) print *, 'Problem with parent1!'
     if (.not. is_valid_route(parent2)) print *, 'Problem with parent2!'
+  end subroutine
+
+  subroutine print_distances(route, positions)
+    integer :: route(:)
+    type(pos) :: positions(:)
+    integer :: i, N
+
+    N = size(route)
+    
+    write (*,'(a)', advance='no') '    '
+    do i = 1, N - 1
+      write (*,'(f5.2)', advance='no') city_distance(positions(route(i)), positions(route(i+1)))
+    end do
+    write (*,'(f5.2)', advance='no') city_distance(positions(route(N)), positions(route(1)))
+    print *, ''
   end subroutine
   
   function is_valid_route(route) result(res)

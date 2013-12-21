@@ -48,25 +48,24 @@ module ga_functions
       dist2 = city_distance(positions(prev), &
                      &  positions(parent2(par2)))
       if (dist1 < dist2) then
-        next = par1
-        other = par2
+        next = parent1(par1)
+        other = parent2(par2)
       else
-        next = par2
-        other = par1
+        next = parent2(par2)
+        other = parent1(par1)
       end if
-      ! Check if candidate is already in child
-      if (.not. in_array(child, next)) then ! Not found. The candidate can be included.
-        child(i) = next
-      else ! Candidate already in child. Choose another.
+      if (in_array(child, next)) then ! Candidate already in child. Choose another.
         ! See if the other candidate is in child
         if (.not. in_array(child, other)) then ! Not found. The candidate can be included.
-          child(i) = other
+          next = other
         else ! Go trough both parents and choose one that has not been included already
           do while(.true.)
             ! Both candidates already in child, try next cities of parents
             ! See if any of them is already included
             par1 = par1 + 1
             par2 = par2 + 1
+            if (par1 > N) par1 = par1 - N
+            if (par2 > N) par2 = par2 - N
             if (in_array(child, parent1(par1))) then
               has_1 = .true.
             else
@@ -79,22 +78,27 @@ module ga_functions
             end if
             ! If only one is included already, choose the other one
             if (has_1 .and. .not. has_2) then
-              child(i) = parent2(par2)
+              next = parent2(par2)
+              exit
             else if (has_2 .and. .not. has_1) then
-              child(i) = parent1(par1)
+              next = parent1(par1)
+              exit
             else if (has_1 .and. has_2) then ! Both included
-              cycle ! Check next ones
+              cycle ! Check next ones'
             else ! Both candidates are not included already. Choose one at random
               call random_number(ran)
               if (ran < 0.5_rk) then
-                child(i) = parent1(par1)
+                next = parent1(par1)
               else
-                child(i) = parent2(par2)
+                next = parent2(par2)
               end if
+              exit
             end if
           end do
         end if
       end if
+      print *, prev, next
+      child(i) = next
     end do
     ! Choose the last city
     !print *, route_sum, sum(child)
