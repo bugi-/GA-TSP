@@ -3,9 +3,7 @@ module ga_functions
   use functions
   implicit none
 
-  ! Some visibility control  
-  public create_child
-  !private
+  real(rk) :: mut_freq = 0.0 ! Mutation frequency. Initiliazed to 0%.
   
   contains
   ! Child creation process as explained in project description
@@ -103,7 +101,30 @@ module ga_functions
     ! Choose the last city
     !print *, route_sum, sum(child)
     child(N) = route_sum - sum(child) ! route_sum is the expected sum of the arithmetic series and sum(child) is the sum without the last element
+    call mutate(child)
   end function
+  
+  ! Mutates the given route by exchanging 2 random elements with probability of mut_freq
+  subroutine mutate(route)
+    integer :: route(:)
+    integer :: el1, el2, temp, N
+    real :: ran
+    
+    N = size(route)
+    
+    call random_number(ran)
+    if (ran < mut_freq) then ! Mutate
+      ! Generate random ints for indexes to switch
+      call random_number(ran)
+      el1 = int(ran*(N))+1
+      call random_number(ran)
+      el2 = int(ran*(N))+1
+      ! Exchange the elements
+      temp = route(el1)
+      route(el1) = route(el2)
+      route(el2) = temp
+    end if
+  end subroutine
   
   ! Performs linear search of array for element. Returns index of (first instance of) element or -1 if not found.
   function lin_search(array, element) result(ind)
