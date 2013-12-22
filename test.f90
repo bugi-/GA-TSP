@@ -103,8 +103,12 @@ program test_suite
     print *, 'Child:'
     write (*,'(*(i5.1))', advance='no') child
     print *, 'Length:', route_length(child, positions)
-    call print_distances(parent2, positions)
-    
+    call print_distances(child, positions)
+    mut_freq = 1.0_rk ! Force mutation
+    child = create_child(parent1, parent2, positions)
+    print *, 'Child with mutatation (should be same as before with 2 elements swapped):'
+    write (*,'(*(i5.1))', advance='no') child
+    print *, ''
     ! Simple check for correctness of the routes
     if (.not. is_valid_route(child)) print *, 'Problem with child!'
     if (.not. is_valid_route(parent1)) print *, 'Problem with parent1!'

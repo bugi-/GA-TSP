@@ -95,7 +95,7 @@ module ga_functions
           end do
         end if
       end if
-      !print *, prev, next ! Debug
+      !print *, prev, next, city_distance(positions(prev), positions(next)) ! Debug
       child(i) = next
     end do
     ! Choose the last city
@@ -140,7 +140,7 @@ module ga_functions
     ind = -1
   end function
   
-  ! Convenience function to check if given element in given array. Returns if .true. if the element is found and .false. if not.
+  ! Convenience function to check if given element in given array. Returns .true. if the element is found and .false. if not.
   function in_array(array, element) result(res)
     integer :: array(:), element
     logical :: res

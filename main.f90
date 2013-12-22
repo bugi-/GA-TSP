@@ -23,9 +23,11 @@ program main
   end if
   read (unt, *) N
   read (unt, *) pop_size
-  read (unt, *) MAX_GENS
+  read (unt, *) MAX_GEN
   read (unt, *) print_freq
   read (unt, *) mutation_prob
+  
+  mut_freq = mutation_prob ! Set the value from preferences to module specific variable
   
   ! Allocation
   !allocate(positions(N))
@@ -35,7 +37,6 @@ program main
   positions = gen_positions(N, 1.0_rk)
   !call print_positions(positions)
 
-  sample_dev = 0.0
   do i = 1, pop_size
     population(i,:) = gen_route(N)
     route_lengths(i) = route_length(population(i,:), positions)

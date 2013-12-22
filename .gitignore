@@ -1,0 +1,6 @@
+$ cat .gitignore
+*.mod
+*.out
+*~
+main
+test
