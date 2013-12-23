@@ -26,6 +26,20 @@ module functions
     res = res + city_distance(positions(route(N)), positions(route(1)))
   end function
   
+  ! Convenience function for calculating all route lengths in a population
+  function calc_route_lengths(population, positions) result(res)
+    integer :: population(:,:)
+    type(pos) :: positions(:)
+    real(rk), allocatable :: res(:)
+    integer :: i, pop_size
+    
+    pop_size = size(population, 1)
+    allocate(res(pop_size))
+    do i = 1, pop_size
+      res(i) = route_length(population(i,:), positions)
+    end do
+  end function
+  
   function city_distance(city1, city2) result(res)
     type(pos) :: city1, city2
     real(rk) :: res
@@ -93,4 +107,17 @@ module functions
     write (*,'(a)') ']'
   end subroutine
   
+  subroutine print_stats(population, positions)
+    integer :: population(:,:)
+    type(pos) :: positions(:)
+    real(rk), allocatable :: route_lengths(:)
+    integer :: N
+
+    N = size(population, 1)
+    allocate(route_lengths(N))
+    route_lengths = calc_route_lengths(population, positions)
+    print *, 'Min length:', minval(route_lengths)
+    print *, 'Std dev:   ', sqrt((sum(route_lengths**2)-sum(route_lengths)**2/size(route_lengths))/(size(route_lengths)-1))
+    deallocate(route_lengths)
+  end subroutine
 end module

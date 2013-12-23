@@ -4,7 +4,7 @@ program main
   use ga_functions
   implicit none
   integer, parameter :: unt = 20 ! Unit for preferences file
-  integer :: i, iost
+  integer :: i, gen, iost
   character(len=20) :: pref_file = 'preferences'
   integer :: N ! Number of cities
   integer :: MAX_GEN ! Maximum number of generations
@@ -34,15 +34,29 @@ program main
   allocate(population(pop_size, N))
   allocate(route_lengths(N))
   
+  ! Generate positions
   positions = gen_positions(N, 1.0_rk)
   !call print_positions(positions)
-
+  
+  ! Generate the population
   do i = 1, pop_size
     population(i,:) = gen_route(N)
-    route_lengths(i) = route_length(population(i,:), positions)
-    !print *, route_lengths(i)
   end do
-  print *, 'Min length:', minval(route_lengths)
-  print *, 'Std dev:   ', sqrt((sum(route_lengths**2)-sum(route_lengths)**2/size(route_lengths))/(size(route_lengths)-1))
+  if (print_freq > 0) then
+    call print_stats(population, positions)
+  end if
+  
+  ! Loop over generations
+  do gen = 1, MAX_GEN
+    do i = 1, pop_size
+      
+    end do
+    ! Print some stats at given intervals
+    if (modulo(i, print_freq) == 0) then
+      route_lengths = calc_route_lengths(population, positions)
+      print *, 'Min length:', minval(route_lengths)
+      print *, 'Std dev:   ', sqrt((sum(route_lengths**2)-sum(route_lengths)**2/size(route_lengths))/(size(route_lengths)-1))
+    end if
+  end do
   
 end program

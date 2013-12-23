@@ -11,7 +11,12 @@ program test_suite
   call test_gen_positions()
   print *, ''
   call test_create_child()
+  print *, ''
+  call test_calc_route_lengths()
+  print *, ''
+
   contains
+
   subroutine test(value, expected)
     real, parameter :: eps = 0.0001
     real(rk) :: value, expected
@@ -57,6 +62,8 @@ program test_suite
     call test(res, sqrt(2.0_rk) + 1 + sqrt(5.0_rk) + 1 + sqrt(5.0_rk)) ! The distances are in lexical order 1-2, 2-3 etc.
     print *, 'Route distance checks passed!'
 
+    deallocate(positions)
+    deallocate(route)
   end subroutine
   
   subroutine test_gen_route()
@@ -142,4 +149,25 @@ program test_suite
       end if
     end do
   end function
+  
+  subroutine test_calc_route_lengths()
+    integer, parameter :: N = 10, pop_size = 9
+    integer :: population(pop_size, N), i
+    real(rk) :: route_lengths(pop_size)
+    type(pos) :: positions(N)
+    
+    ! Generate positions
+    positions = gen_positions(N, 1.0_rk)
+    !call print_positions(positions)
+  
+    ! Generate the population
+    do i = 1, pop_size
+      population(i,:) = gen_route(N)
+    end do
+    route_lengths = calc_route_lengths(population, positions)
+    print *, 'Some stats about a sample population:'
+    print *, 'Min length:', minval(route_lengths)
+    print *, 'Std dev:   ', sqrt((sum(route_lengths**2)-sum(route_lengths)**2/size(route_lengths))/(size(route_lengths)-1))
+  
+  end subroutine
 end program
