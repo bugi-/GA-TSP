@@ -13,6 +13,7 @@ program main
   
   type(pos), allocatable :: positions(:)
   integer, allocatable :: population(:,:)
+  integer, allocatable :: pop_temp(:) ! One route from the population must be saved
   real(rk), allocatable :: route_lengths(:)
   
   ! Open preferences file and read it's contents
@@ -25,13 +26,15 @@ program main
   read (unt, *) pop_size
   read (unt, *) MAX_GEN
   read (unt, *) print_freq
-  read (unt, *) mutation_prob
+  read (unt, *) mut_freq ! Set the value from preferences to module specific variable
   
-  mut_freq = mutation_prob ! Set the value from preferences to module specific variable
+  print *, 'Printing every', print_freq, ' generations.'
+  print *, ''
   
   ! Allocation
   !allocate(positions(N))
   allocate(population(pop_size, N))
+  allocate(pop_temp(N))
   allocate(route_lengths(N))
   
   ! Generate positions
@@ -48,14 +51,15 @@ program main
   
   ! Loop over generations
   do gen = 1, MAX_GEN
-    do i = 1, pop_size
-      
+    ! Generate the new population by replacing i with the child of i and i+1.
+    pop_temp = population(1,:) ! First one is saved for later use
+    do i = 1, pop_size-1
+      population(i,:) = create_child(population(i,:), population(i+1,:), positions)
     end do
     ! Print some stats at given intervals
-    if (modulo(i, print_freq) == 0) then
-      route_lengths = calc_route_lengths(population, positions)
-      print *, 'Min length:', minval(route_lengths)
-      print *, 'Std dev:   ', sqrt((sum(route_lengths**2)-sum(route_lengths)**2/size(route_lengths))/(size(route_lengths)-1))
+    if (modulo(gen, print_freq) == 0) then
+      print *, 'Generation', gen
+      call print_stats(population, positions)
     end if
   end do
   
