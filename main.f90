@@ -72,4 +72,5 @@ program main
   call cpu_time(t1)
   
   print *, 'Time taken by program:', t1 - t0
+  print *, 'Ho ho ho!'
 end program
