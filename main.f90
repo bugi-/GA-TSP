@@ -3,6 +3,7 @@ program main
   use functions
   use ga_functions
   implicit none
+  
   integer, parameter :: unt = 20 ! Unit for preferences file
   integer :: i, gen, iost
   character(len=20) :: pref_file = 'preferences'
@@ -15,6 +16,9 @@ program main
   integer, allocatable :: population(:,:)
   integer, allocatable :: pop_temp(:) ! One route from the population must be saved
   real(rk), allocatable :: route_lengths(:)
+  real :: t0, t1
+
+  call cpu_time(t0)
   
   ! Open preferences file and read it's contents
   open(unt, file=pref_file, status='old', iostat=iost)
@@ -51,11 +55,13 @@ program main
   
   ! Loop over generations
   do gen = 1, MAX_GEN
-    ! Generate the new population by replacing i with the child of i and i+1.
+    ! Generate next generation of the population by replacing i with the child of i and i+1.
     pop_temp = population(1,:) ! First one is saved for later use
     do i = 1, pop_size-1
       population(i,:) = create_child(population(i,:), population(i+1,:), positions)
     end do
+    ! Add the child of last and first
+    population(pop_size, :) = create_child(population(pop_size, :), pop_temp, positions)
     ! Print some stats at given intervals
     if (modulo(gen, print_freq) == 0) then
       print *, 'Generation', gen
@@ -63,4 +69,7 @@ program main
     end if
   end do
   
+  call cpu_time(t1)
+  
+  print *, 'Time taken by program:', t1 - t0
 end program
