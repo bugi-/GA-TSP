@@ -11,6 +11,7 @@ program main
   integer :: MAX_GEN ! Maximum number of generations
   integer :: print_freq ! Printing frequency
   integer :: pop_size ! Population size
+  integer :: seed ! Seed for RNG
   
   type(pos), allocatable :: positions(:)
   integer, allocatable :: population(:,:)
@@ -31,6 +32,8 @@ program main
   read (unt, *) MAX_GEN
   read (unt, *) print_freq
   read (unt, *) mut_freq ! Set the value from preferences to module specific variable
+  read (unt, *) seed
+  print *, 'Read preferences from file', pref_file
   
   print *, 'Printing every', print_freq, ' generations.'
   print *, ''
@@ -40,6 +43,9 @@ program main
   allocate(population(pop_size, N))
   allocate(pop_temp(N))
   allocate(route_lengths(N))
+  
+  ! Set the seed
+  call set_seed(seed)
   
   ! Generate positions
   positions = gen_positions(N, 1.0_rk)
