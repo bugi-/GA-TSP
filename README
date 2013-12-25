@@ -1,4 +1,4 @@
-A parallel genetic algortihm for solving the travelling sales man problem. Final project for the course Tools of High Performance Computing at University of Helsinki.
+A Fortran implementation of a parallel genetic algorithm for solving the travelling sales man problem. Final project for the course Tools of High Performance Computing at University of Helsinki.
 
 
 Requirements:
