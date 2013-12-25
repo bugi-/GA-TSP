@@ -1,0 +1,20 @@
+A parallel genetic algortihm for solving the travelling sales man problem. Final project for the course Tools of High Performance Computing at University of Helsinki.
+
+
+Requirements:
+ Current implementation relies on a gnu extension so gfortran should be used. Makefile also uses gfortran for now.
+
+
+Usage:
+ compile with:
+  'make' for main program
+  'make main_debug' for bounds checking etc. for main
+  'make test' for a simple and inconclusive unit test suite (still much better than most scientific computing programs I have seen)
+  
+ use with:
+   Set parameters for the run in the file 'preferences' and run 'main'. Output is normally to stdout.
+   Test suite is launched with 'test'. Some tests require manual inspection to see if result is as it should. Guides for inspection are often provided.
+
+
+Notes:
+ A Git repository is included in the working folder.

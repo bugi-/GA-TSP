@@ -120,4 +120,18 @@ module functions
     print *, 'Std dev:   ', sqrt((sum(route_lengths**2)-sum(route_lengths)**2/size(route_lengths))/(size(route_lengths)-1))
     deallocate(route_lengths)
   end subroutine
+  
+  ! Sets the whole seed for intrinsic RNG with a single integer. Uses the gnu extension irand function for setting random_seed().
+  subroutine set_seed(s)
+    integer :: s, seed_size, i
+    integer, allocatable :: seed(:)
+    call random_seed(size=seed_size)
+    allocate(seed(seed_size))
+    call srand(s)
+    do i = 1, seed_size
+      seed(i) = irand()
+    end do
+    call random_seed(put=seed)
+    deallocate(seed)
+  end subroutine
 end module
