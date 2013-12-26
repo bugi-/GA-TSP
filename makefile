@@ -2,6 +2,11 @@ main: sizes.o functions.o ga_functions.o main.f90
 	gfortran sizes.o functions.o ga_functions.o -o main -Wall -O3 main.f90
 	rm *.o
 	rm *.mod
+	
+main_mp: sizes.o functions.o ga_functions.o main.f90
+	gfortran sizes.o functions.o ga_functions.o -fopenmp -o main -Wall -O3 main.f90
+	rm *.o
+	rm *.mod
 
 main_debug: sizes.o functions.o ga_functions.o main.f90
 	gfortran sizes.o functions.o ga_functions.o -o main -pg -Wall -fcheck=all main.f90
