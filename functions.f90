@@ -7,6 +7,7 @@ module functions
     real(rk) :: y
   end type
   real(rk) :: mutation_prob
+  character(len=10) :: pos_format = '(f6.2)'
   
   contains
   
@@ -97,39 +98,40 @@ module functions
     do i = 1, size(positions)-1
       write (*,'(f6.2,a)', advance='no') positions(i)%x, ','
     end do
-    write (*,'(f6.2)', advance='no') positions(i)%x ! No comma after the last element
+    write (*,pos_format, advance='no') positions(i)%x ! No comma after the last element
     write (*,'(a)') ']'
     
     write (*,'(a)', advance='no') 'y = ['
     do i = 1, size(positions)-1
       write (*,'(f6.2,a)', advance='no') positions(i)%y, ','
     end do
-    write (*,'(f6.2)', advance='no') positions(i)%y
+    write (*,pos_format, advance='no') positions(i)%y
     write (*,'(a)') ']'
   end subroutine
 
-  ! Prints the cordinates of cities in a given route in the right order  
-  subroutine print_route(route, positions)
-    integer :: route(:), i
+  ! Writes the cordinates of cities in a given route in the right order to a file.
+  subroutine write_route(unt, route, positions)
+    integer :: route(:), i, unt ! unt if unit to write to
     type(pos) :: positions(:)
     
     ! Formatted for easy input into Python plotting
-    write (*,'(a)', advance='no') 'x = ['
+    write (unt,'(a)', advance='no') 'x = ['
     do i = 1, size(positions)
       write (*,'(f6.2,a)', advance='no') positions(route(i))%x, ','
     end do
-    write (*,'(f6.2)', advance='no') positions(route(1))%x ! Write the first one again to make the plot return to start. No comma after the last element.
-    write (*,'(a)') ']'
+    write (unt,pos_format, advance='no') positions(route(1))%x ! Write the first one again to make the plot return to start. No comma after the last element.
+    write (unt,'(a)') ']'
     
-    write (*,'(a)', advance='no') 'y = ['
+    write (unt,'(a)', advance='no') 'y = ['
     do i = 1, size(positions)
-      write (*,'(f6.2,a)', advance='no') positions(route(i))%y, ','
+      write (unt,'(f6.2,a)', advance='no') positions(route(i))%y, ','
     end do
-    write (*,'(f6.2)', advance='no') positions(route(1))%y
-    write (*,'(a)') ']'
+    write (unt,pos_format, advance='no') positions(route(1))%y
+    write (unt,'(a)') ']'
   end subroutine
   
-  subroutine print_stats(population, positions)
+  ! Prints some information about current population and returns the index of shortest route
+  function print_stats(population, positions) result(min_ind)
     integer :: population(:,:)
     type(pos) :: positions(:)
     real(rk), allocatable :: route_lengths(:)
@@ -141,9 +143,8 @@ module functions
     min_ind = minloc(route_lengths, 1)
     print *, 'Min length:', route_lengths(min_ind)
     print *, 'Std dev:   ', sqrt((sum(route_lengths**2)-sum(route_lengths)**2/size(route_lengths))/(size(route_lengths)-1))
-    call print_route(population(min_ind, :), positions)
     deallocate(route_lengths)
-  end subroutine
+  end function
   
   ! Sets the whole seed for intrinsic RNG with a single integer. Uses the gnu extension irand function for setting random_seed().
   subroutine set_seed(s)
