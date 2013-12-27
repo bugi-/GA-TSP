@@ -1,19 +1,19 @@
 import matplotlib.pyplot as plt
 
-x = [  0.47,  0.05,  0.15,  0.56,  0.73,  0.76,  0.82,  0.78,  0.45,  0.19,  0.32,  0.10,  0.54,  0.12,  0.08,  0.02,  0.50,  0.35,  0.83,  0.30,  0.47]
-y = [  0.41,  0.83,  0.40,  0.42,  0.42,  0.34,  0.30,  0.42,  0.38,  0.54,  0.36,  0.99,  0.71,  0.41,  0.22,  0.94,  0.93,  0.36,  0.29,  0.38,  0.41]
+input_file = "main.out" # Output from Fortran main program
 
-fig1 = plt.figure(1)
-plt.scatter(x, y, marker = 'o')
-plt.plot(x, y, 'k-')
-fig1.show()
 
-x = [  0.15,  0.12,  0.19,  0.30,  0.32,  0.35,  0.45,  0.47,  0.56,  0.73,  0.78,  0.76,  0.82,  0.83,  0.54,  0.50,  0.10,  0.02,  0.05,  0.08,  0.15]
-y = [  0.40,  0.41,  0.54,  0.38,  0.36,  0.36,  0.38,  0.41,  0.42,  0.42,  0.42,  0.34,  0.30,  0.29,  0.71,  0.93,  0.99,  0.94,  0.83,  0.22,  0.40]
 
-fig2 = plt.figure(2)
-plt.scatter(x, y, marker = 'o')
-plt.plot(x, y, 'k-')
-fig2.show()
+f = open(input_file)
+lines = f.readlines()
+for i in range(0, len(lines), 2): # Step of 2 to get both x and y
+	# Read x and y in. I know exec can be dangerous, but lazyness wins.
+	exec(lines[i])
+	exec(lines[i+1])
+	# Plot them
+	fig = plt.figure(i / 2)
+	plt.scatter(x, y, marker = 'o') # Plot cities
+	plt.plot(x, y, 'k-') # Plot the route
+	fig.show()
 
-raw_input()
+raw_input() # Otherwise the plots disappear instantly

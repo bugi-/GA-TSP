@@ -72,8 +72,8 @@ program main
   do i = 1, pop_size
     population(i,:) = gen_route(N)
   end do
-  if (print_freq > 0) then
-    shortest_ind = print_stats(population, positions)
+  if (print_freq /= 0) then
+    shortest_ind = get_min_and_print_stats(population, positions)
     if (write_to_file > 0) then
       call write_route(output_unit, population(shortest_ind, :), positions)
     end if
@@ -91,7 +91,7 @@ program main
     ! Print some stats at given intervals
     if (modulo(gen, print_freq) == 0) then
       print *, 'Generation', gen
-      shortest_ind = print_stats(population, positions)
+      shortest_ind = get_min_and_print_stats(population, positions)
       if (write_to_file > 0) then
         call write_route(output_unit, population(shortest_ind, :), positions)
       end if

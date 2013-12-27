@@ -131,7 +131,7 @@ module functions
   end subroutine
   
   ! Prints some information about current population and returns the index of shortest route
-  function print_stats(population, positions) result(min_ind)
+  function get_min_and_print_stats(population, positions) result(min_ind)
     integer :: population(:,:)
     type(pos) :: positions(:)
     real(rk), allocatable :: route_lengths(:)
