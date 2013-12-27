@@ -88,6 +88,7 @@ module functions
         
   end function
   
+  ! Prints the locations of cities' x- and y-cordinates
   subroutine print_positions(positions)
     integer :: i
     type(pos) :: positions(:)
@@ -106,18 +107,41 @@ module functions
     write (*,'(f6.2)', advance='no') positions(i)%y
     write (*,'(a)') ']'
   end subroutine
+
+  ! Prints the cordinates of cities in a given route in the right order  
+  subroutine print_route(route, positions)
+    integer :: route(:), i
+    type(pos) :: positions(:)
+    
+    ! Formatted for easy input into Python plotting
+    write (*,'(a)', advance='no') 'x = ['
+    do i = 1, size(positions)
+      write (*,'(f6.2,a)', advance='no') positions(route(i))%x, ','
+    end do
+    write (*,'(f6.2)', advance='no') positions(route(1))%x ! Write the first one again to make the plot return to start. No comma after the last element.
+    write (*,'(a)') ']'
+    
+    write (*,'(a)', advance='no') 'y = ['
+    do i = 1, size(positions)
+      write (*,'(f6.2,a)', advance='no') positions(route(i))%y, ','
+    end do
+    write (*,'(f6.2)', advance='no') positions(route(1))%y
+    write (*,'(a)') ']'
+  end subroutine
   
   subroutine print_stats(population, positions)
     integer :: population(:,:)
     type(pos) :: positions(:)
     real(rk), allocatable :: route_lengths(:)
-    integer :: N
+    integer :: N, min_ind
 
     N = size(population, 1)
     allocate(route_lengths(N))
     route_lengths = calc_route_lengths(population, positions)
-    print *, 'Min length:', minval(route_lengths)
+    min_ind = minloc(route_lengths, 1)
+    print *, 'Min length:', route_lengths(min_ind)
     print *, 'Std dev:   ', sqrt((sum(route_lengths**2)-sum(route_lengths)**2/size(route_lengths))/(size(route_lengths)-1))
+    call print_route(population(min_ind, :), positions)
     deallocate(route_lengths)
   end subroutine
   
