@@ -1,6 +1,6 @@
-100			Number of cities
-100			Population size
-500			Max number of generations
+20			Number of cities
+50			Population size
+100			Max number of generations
 100			Print frequency (in generations)
 0.10		Mutation probability
 123456		Seed
