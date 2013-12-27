@@ -119,7 +119,7 @@ module functions
     do i = 1, size(positions)
       write (unt,'(f6.2,a)', advance='no') positions(route(i))%x, ','
     end do
-    write (unt,pos_format, advance='no') positions(route(1))%y ! Write the first one again to make the plot return to start. No comma after the last element.
+    write (unt,pos_format, advance='no') positions(route(1))%x ! Write the first one again to make the plot return to start. No comma after the last element.
     write (unt,'(a)') ']'
     
     write (unt,'(a)', advance='no') 'y = ['
