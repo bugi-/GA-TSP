@@ -1,6 +1,7 @@
 Value		Type			Explanation
 20			Integer			Number of cities
 50			Integer			Population size
+5			Integer			Number of populations
 100			Integer			Max number of generations
 50			Integer			Print frequency (in generations). Use 0 to disable printing.
 0.10		Real			Mutation probability

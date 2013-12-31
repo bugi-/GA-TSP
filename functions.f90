@@ -130,19 +130,33 @@ module functions
     write (unt,'(a)') ']'
   end subroutine
   
-  ! Prints some information about current population and returns the index of shortest route
-  function get_min_and_print_stats(population, positions) result(min_ind)
-    integer :: population(:,:)
+  ! Prints some information about current populations and returns the index of shortest route
+  function get_min_and_print_stats(populations, positions) result(indices)
+    integer :: populations(:,:,:)
     type(pos) :: positions(:)
     real(rk), allocatable :: route_lengths(:)
-    integer :: N, min_ind
-
-    N = size(population, 1)
+    real(rk) :: min_length
+    integer :: N, min_ind, min_ind_pop, min_pop, pop
+    integer :: indices(2)
+	
+	min_length = huge(min_length)
+	min_pop = -1
+	min_ind = -1
+	
+    N = size(populations, 2) ! Size of 2. dim (number of cities in a population)
     allocate(route_lengths(N))
-    route_lengths = calc_route_lengths(population, positions)
-    min_ind = minloc(route_lengths, 1)
-    print *, 'Min length:', route_lengths(min_ind)
-    print *, 'Std dev:   ', sqrt((sum(route_lengths**2)-sum(route_lengths)**2/size(route_lengths))/(size(route_lengths)-1))
+    do pop = 1, size(populations, 1) ! This size is the number of different populations
+      route_lengths = calc_route_lengths(populations(pop, :, :), positions)
+      min_ind_pop = minloc(route_lengths, 1)
+      if (route_lengths(min_ind_pop) < min_length) then
+        min_pop = pop
+        min_ind = min_ind_pop
+        min_length = route_lengths(min_ind)
+      end if
+    end do
+    print *, 'Min length:', min_length
+    indices(1) = min_pop; indices(2) = min_ind
+    !print *, 'Std dev:   ', sqrt((sum(route_lengths**2)-sum(route_lengths)**2/size(route_lengths))/(size(route_lengths)-1))
     deallocate(route_lengths)
   end function
   
