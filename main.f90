@@ -16,7 +16,7 @@ program main
   integer :: pop_size ! Population size
   integer :: num_pop ! Number of populations
   integer :: seed ! Seed for RNG
-  integer :: write_to_file ! 
+  integer :: write_to_file ! >0 to enable
   
   type(pos), allocatable :: positions(:)
   integer, allocatable :: populations(:,:,:) ! 3d because every individual population is 2d
@@ -47,6 +47,7 @@ program main
   print *, 'Read preferences from file', pref_file
   print *, 'Printing every', print_freq, ' generations.'
   print *, ''
+  print *, 'Starting'
   
   ! Open output file if needed
   if (write_to_file > 0) then
@@ -86,6 +87,7 @@ program main
   ! Loop over generations
   do gen = 1, MAX_GEN
     ! Generate next generation of the population by replacing i with the child of i and i+1.
+    !$omp parallel do
     do j = 1, num_pop
       pop_temp = populations(j,1,:) ! First one is saved for later use
       do i = 1, pop_size-1
@@ -109,5 +111,4 @@ program main
   call cpu_time(t1)
   
   print *, 'Time taken by program:', t1 - t0
-  print *, 'Ho ho ho!'
 end program
