@@ -23,6 +23,7 @@ module TSP_functions
   
   contains
   
+  ! Calculates the length of a route
   function route_length(route, positions) result(res)
     integer :: route(:)
     type(pos) :: positions(:)
@@ -53,6 +54,7 @@ module TSP_functions
     end do
   end function
   
+  ! Calculates the distance between two cities
   function city_distance(city1, city2) result(res)
     type(pos) :: city1, city2
     real(rk) :: res
@@ -60,6 +62,7 @@ module TSP_functions
     !print *, res ! Debug
   end function
   
+  ! Generates a route
   function gen_route(N) result(res)
     integer, intent(in) :: N
     integer, dimension(N) :: res
@@ -75,7 +78,9 @@ module TSP_functions
   function gen_positions(N, scale) result(res)
     integer :: N, i
     real(rk) :: scale, ran
-    type(pos) :: res(N)
+    type(pos), allocatable :: res(:)
+    
+    allocate(res(N))
     
     do i = 1, N
       call random_number(ran)
@@ -83,7 +88,7 @@ module TSP_functions
       call random_number(ran)
       res(i)%y = scale * ran
     end do
-        
+    
   end function
   
   ! Prints the locations of cities' x- and y-cordinates
