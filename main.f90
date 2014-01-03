@@ -24,7 +24,6 @@ program main
   type(pos), allocatable :: positions(:)
   integer, allocatable :: populations(:,:,:) ! 3d because every individual population is 2d
   integer, allocatable :: population(:,:) ! A single population
-  integer, allocatable :: pop_temp(:) ! One route from the population must be saved
   real(rk), allocatable :: route_lengths(:)
   real(rk) :: t0, t1
 
@@ -64,7 +63,6 @@ program main
   ! Allocation
   allocate(populations(num_pop, pop_size, num_cities))
   allocate(population(pop_size, num_cities))
-  allocate(pop_temp(num_cities))
   allocate(route_lengths(num_cities))
 
   !$ call omp_set_num_threads(n_threads)
@@ -101,15 +99,10 @@ program main
   ! Loop over generations
   do gen = 1, num_generations
     ! Generate next generation of the population by replacing i with the child of i and i+1.
-    !$omp parallel do private(population, i, pop_temp) shared(populations)
+    !$omp parallel do private(population, i) shared(populations)
     do j = 1, num_pop
       population = populations(j,:,:) ! Get the current population
-      pop_temp = population(1,:) ! First one is saved for later use
-      do i = 1, pop_size-1
-        population(i,:) = create_child(population(i,:), population(i+1,:), positions)
-      end do
-      ! Add the child of last and first
-      population(pop_size,:) = create_child(population(pop_size,:), pop_temp, positions)
+      population = gen_new_generation(population, positions)
       populations(j,:,:) = population ! Put the updated population back
     end do
     !$omp end parallel do
@@ -133,7 +126,6 @@ program main
   
   deallocate(populations)
   deallocate(population)
-  deallocate(pop_temp)
   deallocate(route_lengths)
   
   call cpu_time(t1)

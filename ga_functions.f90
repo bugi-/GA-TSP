@@ -10,8 +10,29 @@ module ga_functions
   integer :: migrators = 0 ! Number of best routes to send to neighboring populations
   
   contains
+  
+  function gen_new_generation(old_pop, positions) result(population)
+    integer :: old_pop(:,:)
+    type(pos) :: positions(:)
+    integer, allocatable :: population(:,:)
+    integer, allocatable :: route_temp(:)
+    integer :: i, pop_size
+    
+    allocate(population(size(old_pop, 1), size(old_pop, 2)))
+    allocate(route_temp(size(old_pop, 2)))
+    pop_size = size(population, 1)
+    population = old_pop
+    
+    route_temp = population(1,:) ! First one is saved for later use
+    do i = 1, pop_size-1
+      population(i,:) = create_child(population(i,:), population(i+1,:), positions)
+    end do
+    ! Add the child of last and first
+    population(pop_size,:) = create_child(population(pop_size,:), route_temp, positions)
+  end function
+  
   ! Child creation process as explained in project description
-  !!!! Could use some refactoring!!!
+  ! 
   function create_child(parent1, parent2, positions) result(child)
     type(pos) :: positions(:)
     integer :: parent1(:), parent2(:)
