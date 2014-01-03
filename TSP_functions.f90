@@ -18,7 +18,7 @@ module TSP_functions
     real(rk), allocatable :: route_lengths(:,:)
   end type
   
-  real(rk) :: mutation_prob ! This is set by main as read from the references file
+  real(rk) :: mutation_prob = 0.0_rk ! This is set by main as read from the references file
   character(len=10) :: pos_format = '(f6.2)'
   
   contains

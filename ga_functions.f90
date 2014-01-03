@@ -6,7 +6,7 @@ module ga_functions
   
   implicit none
 
-  real(rk) :: mut_prob = 0.0 ! Mutation frequency. Initiliazed to 0%.
+  real(rk) :: mut_prob = 0.0_rk ! Mutation frequency. Initiliazed to 0%.
   integer :: migrators = 0 ! Number of best routes to send to neighboring populations
   
   contains
