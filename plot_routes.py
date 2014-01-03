@@ -8,12 +8,13 @@ plt.autoscale(tight=True)
 
 f = open(input_file)
 lines = f.readlines()
-for i in range(0, len(lines), 2): # Step of 2 to get both x and y
+for i in range(0, len(lines), 3): # Step of 3 to get both x and y along with generation
 	# Read x and y in. Yes, I know exec can be dangerous, but you should not run programs with unfamiliar inputs anyway.
-	exec(lines[i])
 	exec(lines[i+1])
+	exec(lines[i+2])
 	# Plot them
-	fig = plt.figure(i / 2) # Give the plots consecutive names
+	fig = plt.figure()
+	fig.canvas.manager.set_window_title(str(lines[i])) # Name the plots
 	plt.scatter(x, y, marker = 'o') # Plot the cities
 	plt.plot(x, y, 'k-') # Plot the route
 	#plt.xlim([0,1])

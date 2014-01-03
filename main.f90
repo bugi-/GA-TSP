@@ -92,6 +92,7 @@ program main
     stats = get_stats(populations, positions)
     call print_stats(stats)
     if (write_to_file > 0) then
+      write(output_unit, '(a)') 'Generation   0'
       call write_route(output_unit, populations(stats%min_pop, stats%min_ind, :), positions)
     end if
   end if
@@ -112,6 +113,7 @@ program main
       stats = get_stats(populations, positions)
       call print_stats(stats)
       if (write_to_file > 0) then
+        write(output_unit, '(a,i5)') 'Generation', gen
         call write_route(output_unit, populations(stats%min_pop, stats%min_ind, :), positions)
       end if
     end if
