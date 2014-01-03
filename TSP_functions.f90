@@ -136,12 +136,12 @@ module TSP_functions
     integer :: N, min_ind, min_ind_pop, min_pop, pop
     type(pop_stats) :: stats
 	
-	allocate(stats%route_lengths(size(populations, 1), size(populations, 2)))
+    allocate(stats%route_lengths(size(populations, 1), size(populations, 2)))
 	
-	min_length = huge(min_length)
-	min_pop = -1
-	min_ind = -1
-	
+    min_length = huge(min_length)
+    min_pop = -1
+    min_ind = -1
+
     N = size(populations, 2) ! Size of 2. dim (number of cities in a population)
     allocate(route_lengths(N))
     do pop = 1, size(populations, 1) ! This size is the number of different populations
