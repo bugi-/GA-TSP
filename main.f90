@@ -9,7 +9,7 @@ program main
   character(len=20) :: pref_file = 'preferences' ! Name of preferences file
   integer, parameter :: output_unit = 30 ! Unit for writing cordinates
   character(len=20) :: output_file = 'main.out'
-  integer :: shortest_indices(2) ! Used for output
+  type(pop_stats) :: stats! Used for output
   integer :: i, j, gen, iost
   integer :: n_threads ! Number of threads in OpenMP run
   integer :: N ! Number of cities
@@ -89,9 +89,10 @@ program main
   end do
   if (print_freq /= 0) then
   print *, 'Generation 0'
-    shortest_indices = get_min_and_print_stats(populations, positions)
+    stats = get_stats(populations, positions)
+    call print_stats(stats)
     if (write_to_file > 0) then
-      call write_route(output_unit, populations(shortest_indices(1), shortest_indices(2), :), positions)
+      call write_route(output_unit, populations(stats%min_pop, stats%min_ind, :), positions)
     end if
   end if
   
@@ -113,9 +114,10 @@ program main
     ! Print some stats at given intervals
     if (modulo(gen, print_freq) == 0) then
       print *, 'Generation', gen
-      shortest_indices = get_min_and_print_stats(populations, positions)
+      stats = get_stats(populations, positions)
+      call print_stats(stats)
       if (write_to_file > 0) then
-        call write_route(output_unit, populations(shortest_indices(1), shortest_indices(2), :), positions)
+        call write_route(output_unit, populations(stats%min_pop, stats%min_ind, :), positions)
       end if
     end if
   end do

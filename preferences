@@ -1,10 +1,10 @@
 Value		Type			Explanation
-4			Integer			Number of threads used (if OpenMP version is compiled)
-100			Integer			Number of cities
+2			Integer			Number of threads used (if OpenMP version is compiled)
+50			Integer			Number of cities
 50			Integer			Population size
 4			Integer			Number of populations
-100			Integer			Max number of generations
-50			Integer			Print frequency (in generations). Use 0 to disable printing.
+100			Integer			Number of generations
+100			Integer			Print frequency (in generations). Use 0 to disable printing.
 0.10		Real			Mutation probability
 9123456		Integer			Seed
 1			Integer			Write shortest route's cordinates to file when printing. > 0 for yes, 0<= for no.

@@ -5,11 +5,19 @@ module TSP_functions
   
   implicit none
 
-  type pos          ! Type for city positions
+  ! Type for city positions
+  type pos
     real(rk) :: x
     real(rk) :: y
   end type
 
+  ! Lengths of all routes in all populations and indices to the shortest one
+  type pop_stats
+    integer :: min_pop ! Population where the shortest route is
+    integer :: min_ind ! Index within that population
+    real(rk), allocatable :: route_lengths(:,:)
+  end type
+  
   real(rk) :: mutation_prob ! This is set by main as read from the references file
   character(len=10) :: pos_format = '(f6.2)'
   
@@ -119,14 +127,16 @@ module TSP_functions
     write (unt,'(a)') ']'
   end subroutine
   
-  ! Prints some information about current populations and returns the index of shortest route
-  function get_min_and_print_stats(populations, positions) result(indices)
+  ! Returns the indices of the shortest route and all route lengths
+  function get_stats(populations, positions) result(stats)
     integer :: populations(:,:,:)
     type(pos) :: positions(:)
     real(rk), allocatable :: route_lengths(:)
     real(rk) :: min_length
     integer :: N, min_ind, min_ind_pop, min_pop, pop
-    integer :: indices(2)
+    type(pop_stats) :: stats
+	
+	allocate(stats%route_lengths(size(populations, 1), size(populations, 2)))
 	
 	min_length = huge(min_length)
 	min_pop = -1
@@ -136,6 +146,7 @@ module TSP_functions
     allocate(route_lengths(N))
     do pop = 1, size(populations, 1) ! This size is the number of different populations
       route_lengths = calc_route_lengths(populations(pop, :, :), positions)
+      stats%route_lengths(pop, :) = route_lengths
       min_ind_pop = minloc(route_lengths, 1)
       if (route_lengths(min_ind_pop) < min_length) then
         min_pop = pop
@@ -143,10 +154,18 @@ module TSP_functions
         min_length = route_lengths(min_ind)
       end if
     end do
-    print *, 'Min length:', min_length, 'in population', min_pop
-    indices(1) = min_pop; indices(2) = min_ind
-    !print *, 'Std dev:   ', sqrt((sum(route_lengths**2)-sum(route_lengths)**2/size(route_lengths))/(size(route_lengths)-1))
+    stats%min_pop = min_pop
+    stats%min_ind = min_ind
     deallocate(route_lengths)
   end function
   
+  subroutine print_stats(stats)
+    type(pop_stats) :: stats
+    
+    print *, 'Min length:', stats%route_lengths(stats%min_pop, stats%min_ind), 'in population', stats%min_pop
+    ! A bit messy but this is the standard formula for standard deviation of a sample
+    print *, 'Std dev:    ', sqrt((sum(stats%route_lengths**2)-sum(stats%route_lengths)**2/size(stats%route_lengths)) &
+    & /(size(stats%route_lengths)-1))
+    print *, ''
+  end subroutine
 end module
