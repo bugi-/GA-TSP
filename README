@@ -20,3 +20,5 @@ Usage:
 Notes:
  - A Git repository is included in the working folder.
  - random_number used by this program is thread safe at least when compiled with GNU compilers
+ -The OpenMP version may print out some warnings during compilation (if compiled with e.g. -Wall). These warnings seem to be related to some compiler optimizations and present no actual problems for the program.
+ - Due to the indeterministic way the treads are scheduled by the CPU, the sequence of random numbers used by a certain population may change between runs and thus produce differing results.

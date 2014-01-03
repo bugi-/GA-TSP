@@ -1,12 +1,16 @@
-module functions
+! This module includes functions related to TSP
+module TSP_functions
   use sizes
-  !use ga_functions
+  use helper_functions
+  
   implicit none
+
   type pos          ! Type for city positions
     real(rk) :: x
     real(rk) :: y
   end type
-  real(rk) :: mutation_prob
+
+  real(rk) :: mutation_prob ! This is set by main as read from the references file
   character(len=10) :: pos_format = '(f6.2)'
   
   contains
@@ -58,21 +62,6 @@ module functions
     end do
     call shuffle(res)
   end function
-
-  subroutine shuffle(a) ! Fisher-Yates shuffle implementation from http://rosettacode.org/wiki/Knuth_shuffle
-    integer, intent(inout) :: a(:)
-    integer :: i, randpos, temp
-    real :: r
- 
-    do i = size(a), 2, -1
-      call random_number(r)
-      randpos = int(r * i) + 1
-      temp = a(randpos)
-      a(randpos) = a(i)
-      a(i) = temp
-    end do
- 
-  end subroutine
   
   ! Generates N positions with x- and y-values of 0..scale
   function gen_positions(N, scale) result(res)
@@ -160,17 +149,4 @@ module functions
     deallocate(route_lengths)
   end function
   
-  ! Sets the whole seed for intrinsic RNG with a single integer. Uses the gnu extension irand function for setting random_seed().
-  subroutine set_seed(s)
-    integer :: s, seed_size, i
-    integer, allocatable :: seed(:)
-    call random_seed(size=seed_size)
-    allocate(seed(seed_size))
-    call srand(s)
-    do i = 1, seed_size
-      seed(i) = irand()
-    end do
-    call random_seed(put=seed)
-    deallocate(seed)
-  end subroutine
 end module

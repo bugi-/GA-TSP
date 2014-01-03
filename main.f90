@@ -1,6 +1,6 @@
 program main
   use sizes
-  use functions
+  use TSP_functions
   use ga_functions
   !$ use omp_lib
   implicit none
@@ -11,6 +11,7 @@ program main
   character(len=20) :: output_file = 'main.out'
   integer :: shortest_indices(2) ! Used for output
   integer :: i, j, gen, iost
+  integer :: n_threads ! Number of threads in OpenMP run
   integer :: N ! Number of cities
   integer :: MAX_GEN ! Maximum number of generations
   integer :: print_freq ! Printing frequency
@@ -37,6 +38,7 @@ program main
   end if
   
   read (pref_unit, *)
+  read (pref_unit, *) n_threads
   read (pref_unit, *) N
   read (pref_unit, *) pop_size
   read (pref_unit, *) num_pop
@@ -46,11 +48,6 @@ program main
   read (pref_unit, *) seed
   read (pref_unit, *) write_to_file
   close(pref_unit)
-  
-  print *, 'Read preferences from file', pref_file
-  print *, 'Printing every', print_freq, ' generations.'
-  print *, ''
-  print *, 'Starting'
   
   ! Open output file if needed
   if (write_to_file > 0) then
@@ -67,9 +64,18 @@ program main
   allocate(population(pop_size, N))
   allocate(pop_temp(N))
   allocate(route_lengths(N))
+
+  !$ call omp_set_num_threads(n_threads)
   
-  ! Set the seed
   call set_seed(seed)
+  
+  print *, 'Read preferences from file ', pref_file
+  print *, 'Printing every', print_freq, ' generations.'
+  !$ n_threads = omp_get_num_threads()
+  !$ print *, 'Using ', n_threads, 'threads.'
+  print *, ''
+  print *, 'Starting...'
+  print *, ''
   
   ! Generate positions
   positions = gen_positions(N, 1.0_rk)
@@ -82,6 +88,7 @@ program main
     end do
   end do
   if (print_freq /= 0) then
+  print *, 'Generation 0'
     shortest_indices = get_min_and_print_stats(populations, positions)
     if (write_to_file > 0) then
       call write_route(output_unit, populations(shortest_indices(1), shortest_indices(2), :), positions)
@@ -91,7 +98,7 @@ program main
   ! Loop over generations
   do gen = 1, MAX_GEN
     ! Generate next generation of the population by replacing i with the child of i and i+1.
-    !$omp parallel do private(population, i, pop_temp) shared(populations) num_threads(2)
+    !$omp parallel do private(population, i, pop_temp) shared(populations)
     do j = 1, num_pop
       population = populations(j,:,:) ! Get the current population
       pop_temp = population(1,:) ! First one is saved for later use

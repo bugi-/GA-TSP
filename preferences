@@ -1,4 +1,5 @@
 Value		Type			Explanation
+4			Integer			Number of threads used (if OpenMP version is compiled)
 100			Integer			Number of cities
 50			Integer			Population size
 4			Integer			Number of populations

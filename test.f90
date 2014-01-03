@@ -1,6 +1,6 @@
 program test_suite
   use sizes
-  use functions
+  use TSP_functions
   use ga_functions
   implicit none
   

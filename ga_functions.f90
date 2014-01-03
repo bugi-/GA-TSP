@@ -1,6 +1,9 @@
+! This module contains procedures related to the genetic algorithm used.
 module ga_functions
   use sizes
-  use functions
+  use TSP_functions
+  use helper_functions
+  
   implicit none
 
   real(rk) :: mut_freq = 0.0 ! Mutation frequency. Initiliazed to 0%.
@@ -126,25 +129,4 @@ module ga_functions
     end if
   end subroutine
   
-  ! Performs linear search of array for element. Returns index of (first instance of) element or -1 if not found.
-  function lin_search(array, element) result(ind)
-    integer :: array(:), ind, i, element
-    
-    do i = 1, size(array)
-      if (array(i) == element) then
-        ind = i
-        return
-      end if
-    end do
-    ! Not found
-    ind = -1
-  end function
-  
-  ! Convenience function to check if given element in given array. Returns .true. if the element is found and .false. if not.
-  function in_array(array, element) result(res)
-    integer :: array(:), element
-    logical :: res
-    res = .false.
-    if (lin_search(array, element) > 0) res = .true.
-  end function
 end module
