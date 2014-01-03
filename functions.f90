@@ -154,7 +154,7 @@ module functions
         min_length = route_lengths(min_ind)
       end if
     end do
-    print *, 'Min length:', min_length
+    print *, 'Min length:', min_length, 'in population', min_pop
     indices(1) = min_pop; indices(2) = min_ind
     !print *, 'Std dev:   ', sqrt((sum(route_lengths**2)-sum(route_lengths)**2/size(route_lengths))/(size(route_lengths)-1))
     deallocate(route_lengths)

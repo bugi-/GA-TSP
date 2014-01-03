@@ -2,6 +2,7 @@ program main
   use sizes
   use functions
   use ga_functions
+  !$ use omp_lib
   implicit none
   
   integer, parameter :: pref_unit = 20 ! Unit for preferences file
@@ -20,11 +21,13 @@ program main
   
   type(pos), allocatable :: positions(:)
   integer, allocatable :: populations(:,:,:) ! 3d because every individual population is 2d
+  integer, allocatable :: population(:,:) ! A single population
   integer, allocatable :: pop_temp(:) ! One route from the population must be saved
   real(rk), allocatable :: route_lengths(:)
-  real :: t0, t1
+  real(rk) :: t0, t1
 
   call cpu_time(t0)
+  !$ t0 = omp_get_wtime()
   
   ! Open preferences file and read it's contents
   open(pref_unit, file=pref_file, status='old', iostat=iost)
@@ -61,6 +64,7 @@ program main
   ! Allocation
   !allocate(positions(N))
   allocate(populations(num_pop, pop_size, N))
+  allocate(population(pop_size, N))
   allocate(pop_temp(N))
   allocate(route_lengths(N))
   
@@ -87,15 +91,18 @@ program main
   ! Loop over generations
   do gen = 1, MAX_GEN
     ! Generate next generation of the population by replacing i with the child of i and i+1.
-    !$omp parallel do
+    !$omp parallel do private(population, i, pop_temp) shared(populations) num_threads(2)
     do j = 1, num_pop
-      pop_temp = populations(j,1,:) ! First one is saved for later use
+      population = populations(j,:,:) ! Get the current population
+      pop_temp = population(1,:) ! First one is saved for later use
       do i = 1, pop_size-1
-        populations(j,i,:) = create_child(populations(j,i,:), populations(j,i+1,:), positions)
+        population(i,:) = create_child(population(i,:), population(i+1,:), positions)
       end do
       ! Add the child of last and first
-      populations(j,pop_size,:) = create_child(populations(j,pop_size,:), pop_temp, positions)
+      population(pop_size,:) = create_child(population(pop_size,:), pop_temp, positions)
+      populations(j,:,:) = population ! Put the updated population back
     end do
+    !$omp end parallel do
     ! Print some stats at given intervals
     if (modulo(gen, print_freq) == 0) then
       print *, 'Generation', gen
@@ -108,7 +115,13 @@ program main
   
   close(output_unit)
   
+  deallocate(populations)
+  deallocate(population)
+  deallocate(pop_temp)
+  deallocate(route_lengths)
+  
   call cpu_time(t1)
+  !$ t1 = omp_get_wtime()
   
   print *, 'Time taken by program:', t1 - t0
 end program

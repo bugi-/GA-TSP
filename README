@@ -7,8 +7,9 @@ Requirements:
 
 Usage:
  compile with:
-  'make' for main program
-  'make main_debug' for bounds checking etc. for main
+  'make' for standard main program
+  'make openmmp' for openmp parallelized version of main
+  'make main_debug' for bounds checking and extra warnings etc. for main
   'make test' for a simple and inconclusive unit test suite (still much better than most scientific computing programs I have seen)
   
  use with:
@@ -17,4 +18,5 @@ Usage:
 
 
 Notes:
- A Git repository is included in the working folder.
+ - A Git repository is included in the working folder.
+ - random_number used by this program is thread safe at least when compiled with GNU compilers

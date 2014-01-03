@@ -3,7 +3,7 @@ main: sizes.o functions.o ga_functions.o main.f90
 	rm *.o
 	rm *.mod
 	
-main_openmp: sizes.o functions.o ga_functions.o main.f90
+openmp: sizes.o functions.o ga_functions.o main.f90
 	gfortran sizes.o functions.o ga_functions.o -o main -fopenmp -Wall -O3 main.f90
 	rm *.o
 	rm *.mod
