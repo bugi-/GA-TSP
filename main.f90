@@ -12,9 +12,10 @@ program main
   type(pop_stats) :: stats! Used for output
   integer :: i, j, gen, iost
   integer :: n_threads ! Number of threads in OpenMP run
-  integer :: N ! Number of cities
-  integer :: MAX_GEN ! Maximum number of generations
+  integer :: num_cities ! Number of cities
+  integer :: num_generations ! Maximum number of generations
   integer :: print_freq ! Printing frequency
+  integer :: migration_freq ! Frequency of migration between populations
   integer :: pop_size ! Population size
   integer :: num_pop ! Number of populations
   integer :: seed ! Seed for RNG
@@ -39,13 +40,14 @@ program main
   
   read (pref_unit, *)
   read (pref_unit, *) n_threads
-  read (pref_unit, *) N
+  read (pref_unit, *) num_cities
   read (pref_unit, *) pop_size
   read (pref_unit, *) num_pop
-  read (pref_unit, *) MAX_GEN
-  read (pref_unit, *) print_freq
-  read (pref_unit, *) mut_freq ! Set the value from preferences to module specific variable
+  read (pref_unit, *) num_generations
+  read (pref_unit, *) mut_prob ! Set the value from preferences to module specific variable
+  read (pref_unit, *) migration_freq
   read (pref_unit, *) seed
+  read (pref_unit, *) print_freq
   read (pref_unit, *) write_to_file
   close(pref_unit)
   
@@ -59,11 +61,10 @@ program main
   end if
   
   ! Allocation
-  !allocate(positions(N))
-  allocate(populations(num_pop, pop_size, N))
-  allocate(population(pop_size, N))
-  allocate(pop_temp(N))
-  allocate(route_lengths(N))
+  allocate(populations(num_pop, pop_size, num_cities))
+  allocate(population(pop_size, num_cities))
+  allocate(pop_temp(num_cities))
+  allocate(route_lengths(num_cities))
 
   !$ call omp_set_num_threads(n_threads)
   
@@ -78,17 +79,17 @@ program main
   print *, ''
   
   ! Generate positions
-  positions = gen_positions(N, 1.0_rk)
+  positions = gen_positions(num_cities, 1.0_rk)
   !call print_positions(positions)
   
   ! Generate the population
   do i = 1, num_pop
     do j = 1, pop_size
-      populations(i, j, :) = gen_route(N)
+      populations(i, j, :) = gen_route(num_cities)
     end do
   end do
-  if (print_freq /= 0) then
-  print *, 'Generation 0'
+  if (print_freq /= 0) then ! Print if that is enabled
+    print *, 'Generation 0'
     stats = get_stats(populations, positions)
     call print_stats(stats)
     if (write_to_file > 0) then
@@ -97,7 +98,7 @@ program main
   end if
   
   ! Loop over generations
-  do gen = 1, MAX_GEN
+  do gen = 1, num_generations
     ! Generate next generation of the population by replacing i with the child of i and i+1.
     !$omp parallel do private(population, i, pop_temp) shared(populations)
     do j = 1, num_pop
@@ -119,6 +120,11 @@ program main
       if (write_to_file > 0) then
         call write_route(output_unit, populations(stats%min_pop, stats%min_ind, :), positions)
       end if
+    end if
+    ! Do migration
+    if (modulo(gen, migration_freq) == 0) then
+      stats = get_stats(populations, positions)
+      !call migrate(populations, stats)
     end if
   end do
   

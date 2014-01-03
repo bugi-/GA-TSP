@@ -159,13 +159,19 @@ module TSP_functions
     deallocate(route_lengths)
   end function
   
+  ! Prints information from the statistics type
   subroutine print_stats(stats)
     type(pop_stats) :: stats
+    real(rk) :: mean
+    integer :: N
     
-    print *, 'Min length:', stats%route_lengths(stats%min_pop, stats%min_ind), 'in population', stats%min_pop
-    ! A bit messy but this is the standard formula for standard deviation of a sample
-    print *, 'Std dev:    ', sqrt((sum(stats%route_lengths**2)-sum(stats%route_lengths)**2/size(stats%route_lengths)) &
-    & /(size(stats%route_lengths)-1))
+    N = size(stats%route_lengths)
+    mean = sum(stats%route_lengths) / N
+    
+    print *, 'Min length:', stats%route_lengths(stats%min_pop, stats%min_ind), &
+    & 'in population', stats%min_pop, 'index', stats%min_ind
+    ! This is the usual formula for corrected standard deviation of a sample. The formula is std_dev^2 = sum(i=1..N)(x_i - x_mean)^2 / (N-1)
+    print *, 'Std dev:    ', sqrt(sum((stats%route_lengths - mean)**2) / (N-1))
     print *, ''
   end subroutine
 end module

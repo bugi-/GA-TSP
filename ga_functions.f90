@@ -6,7 +6,7 @@ module ga_functions
   
   implicit none
 
-  real(rk) :: mut_freq = 0.0 ! Mutation frequency. Initiliazed to 0%.
+  real(rk) :: mut_prob = 0.0 ! Mutation frequency. Initiliazed to 0%.
   
   contains
   ! Child creation process as explained in project description
@@ -107,7 +107,7 @@ module ga_functions
     call mutate(child)
   end function
   
-  ! Mutates the given route by exchanging 2 random elements with probability of mut_freq
+  ! Mutates the given route by exchanging 2 random elements with probability of mut_prob
   subroutine mutate(route)
     integer :: route(:)
     integer :: el1, el2, temp, N
@@ -116,7 +116,7 @@ module ga_functions
     N = size(route)
     
     call random_number(ran)
-    if (ran < mut_freq) then ! Mutate
+    if (ran < mut_prob) then ! Mutate
       ! Generate random ints for indexes to switch
       call random_number(ran)
       el1 = int(ran*(N))+1
