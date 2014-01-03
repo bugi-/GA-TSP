@@ -11,7 +11,7 @@ module TSP_functions
     real(rk) :: y
   end type
 
-  ! Lengths of all routes in all populations and indices to the shortest one
+  ! Lengths of all routes in all populations and indices to the shortest one. pops_stats would be more descriptive, but it sounds weird.
   type pop_stats
     integer :: min_pop ! Population where the shortest route is
     integer :: min_ind ! Index within that population

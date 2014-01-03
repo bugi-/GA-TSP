@@ -46,6 +46,7 @@ program main
   read (pref_unit, *) num_generations
   read (pref_unit, *) mut_prob ! Set the value from preferences to module specific variable
   read (pref_unit, *) migration_freq
+  read (pref_unit, *) migrators ! Once again set the variable in module
   read (pref_unit, *) seed
   read (pref_unit, *) print_freq
   read (pref_unit, *) write_to_file
@@ -124,7 +125,7 @@ program main
     ! Do migration
     if (modulo(gen, migration_freq) == 0) then
       stats = get_stats(populations, positions)
-      !call migrate(populations, stats)
+      call migrate(populations, stats)
     end if
   end do
   

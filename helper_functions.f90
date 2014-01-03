@@ -1,22 +1,29 @@
 ! This module includes some functions for doing things not directly related to the TSP.
 module helper_functions
-
+  use sizes
 contains
 
+  ! Returns a random integer in the range 1..max_val
+  function rand_int(max_val) result(res)
+    integer :: max_val, res
+    real(rk) :: ran
+    call random_number(ran)
+    res = int(ran * max_val) + 1
+  end function
+
+  ! Shuffles the input list
   subroutine shuffle(a) ! Fisher-Yates shuffle implementation from http://rosettacode.org/wiki/Knuth_shuffle
     integer, intent(inout) :: a(:)
     integer :: i, randpos, temp
-    real :: r
  
     do i = size(a), 2, -1
-      call random_number(r)
-      randpos = int(r * i) + 1
+      randpos = rand_int(i)
       temp = a(randpos)
       a(randpos) = a(i)
       a(i) = temp
     end do
- 
   end subroutine
+  
     ! Sets the whole seed for intrinsic RNG with a single integer. Uses the gnu extension irand function for setting random_seed().
   subroutine set_seed(s)
     integer :: s, seed_size, i
@@ -51,5 +58,22 @@ contains
     logical :: res
     res = .false.
     if (lin_search(array, element) > 0) res = .true.
+  end function
+  
+  ! Finds and returns an array of indices of n smallest values in array. The method used is not very fast, but it should not be a problem because n should always be small.
+  function n_smallest(array, n) result(res)
+    real(rk) :: array(:)
+    integer :: n, i
+    logical, allocatable :: mask(:)
+    integer, allocatable :: res(:)
+    
+    allocate(res(n))
+    allocate(mask(size(array)))
+    mask = .True.
+    
+    do i = 1, n
+      res(i) = minloc(array, 1, mask) ! Use intrinsic to find minimum value
+      mask(res(i)) = .False. ! Remove the saved indices from future searches
+    end do
   end function
 end module

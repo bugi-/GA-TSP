@@ -6,6 +6,7 @@ Value		Type			Explanation
 100			Integer			Number of generations
 0.10		Real			Mutation probability
 10			Integer			Migration frequency (in generations)
+2			Integer			Number of routes to send to neighboring populations during migration. Has to be < 0.5 * population size.
 9123456		Integer			Seed for random number generator
 100			Integer			Output frequency (in generations). Use 0 to disable printing and file output.
 1			Integer			Write shortest route's cordinates to file when printing. > 0 for yes, 0<= for no.

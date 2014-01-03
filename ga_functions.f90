@@ -7,6 +7,7 @@ module ga_functions
   implicit none
 
   real(rk) :: mut_prob = 0.0 ! Mutation frequency. Initiliazed to 0%.
+  integer :: migrators = 0 ! Number of best routes to send to neighboring populations
   
   contains
   ! Child creation process as explained in project description
@@ -117,11 +118,9 @@ module ga_functions
     
     call random_number(ran)
     if (ran < mut_prob) then ! Mutate
-      ! Generate random ints for indexes to switch
-      call random_number(ran)
-      el1 = int(ran*(N))+1
-      call random_number(ran)
-      el2 = int(ran*(N))+1
+      ! Generate random ints for indices to switch
+      el1 = rand_int(N)
+      el2 = rand_int(N)
       ! Exchange the elements
       temp = route(el1)
       route(el1) = route(el2)
@@ -129,4 +128,62 @@ module ga_functions
     end if
   end subroutine
   
+  ! Migrates best routes to neighboring populations
+  subroutine migrate(populations, stats)
+    integer :: populations(:,:,:)
+    type(pop_stats) :: stats
+    integer, allocatable :: shortest(:,:)
+    integer :: pop, num_pop, num_cities, i, prev, next, ind
+    
+    if (migrators <= 0) then ! Skip the subprogram if no migration
+      return
+    end if
+    
+    num_pop = size(populations, 1) ! Number of populations
+    num_cities = size(populations, 3)
+    
+    allocate(shortest(num_pop, migrators)) ! We need to save the indices of all migrators for all populations
+    
+    ! Find the n shortest routes first
+    do pop = 1, num_pop
+      shortest(pop, :) = n_smallest(stats%route_lengths(pop, :), migrators)
+    end do
+    
+    ! Some inline testing
+    
+    !do pop = 1, num_pop
+    !  print *, 'Population', pop
+    !  do i = 1, migrators
+    !    print *, stats%route_lengths(pop, shortest(pop, i))
+    !  end do
+    !end do
+
+    ! Do the actual migration
+    do pop = 1, num_pop
+      ! Calculate where to send the best routes and check for boundaries
+      prev = pop - 1
+      if (prev <= 0) prev = prev + num_pop
+      next = pop + 1
+      if (next > num_pop) next = next - num_pop
+      
+      do i = 1, migrators
+        ! Find an index to put a route in a neighbour. The neighbour's shortest routes can not be replaced.
+        do while (.True.)
+          ind = rand_int(num_cities)
+          if (.not. in_array(shortest(prev, :), ind)) exit
+        end do
+        !Copy the route
+        populations(prev, ind, :) = populations(pop, shortest(pop, i), :)
+        ! Do the same to the other neighbor
+        do while (.True.)
+          ind = rand_int(num_cities)
+          if (.not. in_array(shortest(next, :), ind)) exit
+        end do
+        !Copy the route
+        populations(next, ind, :) = populations(pop, shortest(pop, i), :)
+      end do
+    end do
+    
+    deallocate(shortest)
+  end subroutine
 end module
